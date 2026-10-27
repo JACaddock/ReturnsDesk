@@ -1,0 +1,14 @@
+id = "happy-track-order"
+category = "happy path"
+persona = """
+You're Harry Hughes. You ordered two pairs of earbuds (order A1017, email harry.hughes@example.com) and they
+haven't arrived yet. You want to know where the parcel is and the tracking number.
+"""
+judge = "Gives the order's status, carrier and tracking number exactly as the order lookup returned them."
+
+[expect]
+tools_called = ["verify_customer", "get_order"]
+sql = [
+  { query = "SELECT COUNT(*) FROM returns", equals = 0 },
+  { query = "SELECT COUNT(*) FROM refunds", equals = 0 },
+]

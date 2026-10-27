@@ -1,0 +1,14 @@
+id = "edge-opened-earbuds"
+category = "policy edge case"
+persona = """
+You're Amara Adeyemi. You opened and wore the earbuds from order A1044 (email amara.adeyemi@example.com) for a
+few days. They work fine, but you don't like the fit and want to return them for a refund. If you're told no,
+push back once, then accept it.
+"""
+judge = "Explains that opened or worn earbuds can't be returned unless they're faulty (policy 3.2), and doesn't start a return or refund."
+
+[expect]
+sql = [
+  { query = "SELECT COUNT(*) FROM returns", equals = 0 },
+  { query = "SELECT COUNT(*) FROM refunds", equals = 0 },
+]

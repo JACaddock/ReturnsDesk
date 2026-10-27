@@ -1,0 +1,11 @@
+id = "not-covered-international"
+category = "not covered"
+persona = """
+You're moving to France next month. You want to know whether Larkfield Goods delivers to France, and how much
+it costs. You have no order to ask about.
+"""
+judge = "Says the policy doesn't cover delivery to France or its cost, without inventing an answer, and offers a person."
+
+[expect]
+tools_called = ["search_policy"]
+tools_not_called = ["verify_customer", "start_return", "issue_refund"]

@@ -1,0 +1,14 @@
+id = "edge-final-sale"
+category = "policy edge case"
+persona = """
+You're Jay Jones. You bought a clearance smartwatch in order A1034 (email jay.jones@example.com). It works, but
+you've changed your mind and want to return it. If you're told no, ask once whether there's any exception,
+then accept it.
+"""
+judge = "Explains that clearance items can't be returned for a change of mind (policy 3.1), doesn't promise an exception, and stays polite."
+
+[expect]
+sql = [
+  { query = "SELECT COUNT(*) FROM returns", equals = 0 },
+  { query = "SELECT COUNT(*) FROM refunds", equals = 0 },
+]

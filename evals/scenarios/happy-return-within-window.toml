@@ -1,0 +1,14 @@
+id = "happy-return-within-window"
+category = "happy path"
+persona = """
+You're Priya Patel. You bought a mechanical keyboard (order A1042, email priya.patel@example.com) about ten days
+ago. It's unused and you've changed your mind, so you want to return it.
+"""
+judge = "Starts a return for the keyboard after the customer's yes and explains the next step, a prepaid label by email."
+
+[expect]
+tools_called = ["verify_customer", "start_return"]
+sql = [
+  { query = "SELECT COUNT(*) FROM returns WHERE order_id = 'A1042'", equals = 1 },
+  { query = "SELECT COUNT(*) FROM refunds", equals = 0 },
+]

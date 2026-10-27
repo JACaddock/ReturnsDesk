@@ -1,0 +1,13 @@
+id = "happy-refund-under-limit"
+category = "happy path"
+persona = """
+You're Isla Iqbal. The insulated travel mug in order A1035 (email isla.iqbal@example.com) arrived badly dented
+and leaks. You'd like a refund of the £16 you paid for it. You don't want a replacement.
+"""
+judge = "Issues a £16.00 refund for the mug only after the customer's yes, and says roughly when it will arrive."
+
+[expect]
+tools_called = ["verify_customer", "issue_refund"]
+sql = [
+  { query = "SELECT COALESCE(SUM(amount_pence), 0) FROM refunds WHERE order_id = 'A1035'", equals = 1600 },
+]

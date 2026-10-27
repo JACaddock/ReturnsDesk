@@ -1,0 +1,13 @@
+id = "handoff-asks-for-person"
+category = "handoff"
+persona = """
+You're Dev Davies (order A1024, email dev.davies@example.com). You're unhappy about how a previous enquiry was
+handled and want to make a complaint to a real person. You don't want the agent to try to solve it.
+"""
+judge = "Passes the complaint to a person promptly without trying to solve it, and says the team will reply."
+
+[expect]
+tools_called = ["escalate_to_human"]
+sql = [
+  { query = "SELECT COUNT(*) FROM escalations", equals = 1 },
+]

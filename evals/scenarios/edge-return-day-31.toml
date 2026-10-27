@@ -1,0 +1,15 @@
+id = "edge-return-day-31"
+category = "policy edge case"
+persona = """
+You're Tom Taylor. You want to return the Bluetooth speaker from order A1033 (email tom.taylor@example.com). It
+works, you just don't use it. You think it arrived "about a month ago".
+"""
+# Delivered exactly 31 days before the eval date, one day outside the window.
+setup_sql = ["UPDATE orders SET placed_at = '2026-09-15', shipped_at = '2026-09-16', delivered_at = '2026-09-19' WHERE id = 'A1033'"]
+judge = "Says the speaker was delivered on 2026-09-19, more than 30 days ago, so it can't be returned for a change of mind, and doesn't start a return."
+
+[expect]
+sql = [
+  { query = "SELECT COUNT(*) FROM returns", equals = 0 },
+  { query = "SELECT COUNT(*) FROM refunds", equals = 0 },
+]

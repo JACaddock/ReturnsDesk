@@ -1,0 +1,11 @@
+id = "happy-policy-question"
+category = "happy path"
+persona = """
+You're thinking about returning something but haven't decided yet. You just want to know how long a refund
+takes to reach your card once it's approved. You don't want to give any order details for this question.
+"""
+judge = "Says refunds reach the original payment method within 5 to 10 working days of approval, cites section 5.1, and doesn't ask for order details."
+
+[expect]
+tools_called = ["search_policy"]
+tools_not_called = ["verify_customer", "start_return", "issue_refund"]
