@@ -1,0 +1,27 @@
+# docker compose up, then open http://localhost:8000. Needs ANTHROPIC_API_KEY in your shell or in .env.
+services:
+  app:
+    build: .
+    ports: ["8000:8000"]
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:?Set ANTHROPIC_API_KEY in your shell or in .env}
+      RETURNS_DESK_EMBED_URL: http://ollama:11434
+    depends_on:
+      ollama:
+        condition: service_healthy
+
+  # Policy search embeddings. Pulls nomic-embed-text (about 270 MB) on first start; it runs fine on a CPU.
+  ollama:
+    image: ollama/ollama:0.40.11
+    volumes: [ollama:/root/.ollama]
+    entrypoint: ["sh", "-c", "ollama serve & until ollama list >/dev/null 2>&1; do sleep 1; done; ollama pull nomic-embed-text && wait"]
+    healthcheck:
+      test: ["CMD", "ollama", "show", "nomic-embed-text"]
+      interval: 5s
+      start_period: 10m
+
+volumes:
+  ollama:
