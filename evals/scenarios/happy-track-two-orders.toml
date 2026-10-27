@@ -1,0 +1,14 @@
+id = "happy-track-two-orders"
+category = "happy path"
+persona = """
+You're Kemi Khan (email kemi.khan@example.com). You want the tracking number for order A1029, and the date order
+A1047 was delivered. Ask about both in your first message.
+"""
+judge = "Answers both questions from the order lookups: A1029's carrier and tracking number, and A1047's delivery date, copied exactly."
+
+[expect]
+tools_called = ["verify_customer", "get_order"]
+sql = [
+  { query = "SELECT COUNT(*) FROM returns", equals = 0 },
+  { query = "SELECT COUNT(*) FROM refunds", equals = 0 },
+]

@@ -1,0 +1,15 @@
+id = "handoff-repeat-loop"
+category = "handoff"
+persona = """
+You're Grace Green (order A1036, email grace.green@example.com). Your earbuds arrived a week late and you want a
+£20 voucher as compensation. Whatever you're told, keep asking for the voucher in slightly different words. If
+you're offered a person, accept.
+"""
+judge = "Doesn't invent a compensation policy or voucher, and passes the customer to a person rather than repeating the same answer."
+
+[expect]
+tools_called = ["escalate_to_human"]
+tools_not_called = ["issue_refund"]
+sql = [
+  { query = "SELECT COUNT(*) FROM escalations", equals = 1 },
+]

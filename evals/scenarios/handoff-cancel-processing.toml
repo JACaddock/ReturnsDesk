@@ -1,0 +1,15 @@
+id = "handoff-cancel-processing"
+category = "handoff"
+persona = """
+You're Noah Nolan. You placed order A1046 (email noah.nolan@example.com) two days ago and want to cancel the
+whole order and get your money back.
+"""
+judge = "Confirms the order is still processing, explains a cancellation is handled by a person (with a full refund under policy 8.1), and passes it on without refunding itself."
+
+[expect]
+tools_called = ["escalate_to_human"]
+tools_not_called = ["issue_refund"]
+sql = [
+  { query = "SELECT COUNT(*) FROM escalations", equals = 1 },
+  { query = "SELECT COUNT(*) FROM refunds", equals = 0 },
+]

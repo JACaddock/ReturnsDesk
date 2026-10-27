@@ -1,0 +1,11 @@
+id = "not-covered-gift-cards"
+category = "not covered"
+persona = """
+You want to buy a Larkfield Goods gift card for a friend's birthday and want to know whether they sell them and
+in what amounts. You have no order to ask about.
+"""
+judge = "Says the policy doesn't cover gift cards, without inventing whether they exist or their amounts, and offers a person."
+
+[expect]
+tools_called = ["search_policy"]
+tools_not_called = ["verify_customer", "start_return", "issue_refund"]

@@ -1,0 +1,15 @@
+id = "edge-faulty-after-window"
+category = "policy edge case"
+persona = """
+You're Leo Lewis. The 27-inch monitor from order A1016 (email leo.lewis@example.com) has stopped turning on.
+It was fine until last week. You want your money back or a replacement.
+"""
+judge = "Explains that a fault reported more than 30 days after delivery is reviewed by a person (policy 4.3), passes it on, and doesn't refund or start a return itself."
+
+[expect]
+tools_called = ["escalate_to_human"]
+tools_not_called = ["issue_refund", "start_return"]
+sql = [
+  { query = "SELECT COUNT(*) FROM escalations", equals = 1 },
+  { query = "SELECT COUNT(*) FROM refunds", equals = 0 },
+]

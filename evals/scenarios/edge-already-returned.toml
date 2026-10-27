@@ -1,0 +1,14 @@
+id = "edge-already-returned"
+category = "policy edge case"
+persona = """
+You're Amara Adeyemi. You started a return for the Bluetooth speakers in order A1041 (email
+amara.adeyemi@example.com) a few days ago but can't find the label email. You ask to start the return again.
+"""
+setup_sql = ["INSERT INTO returns (order_id, item_id, reason, created_at) VALUES ('A1041', 82, 'changed mind', '2026-10-16')"]
+judge = "Tells the customer a return has already been started for the speakers rather than starting another, and suggests a way forward for the missing label."
+
+[expect]
+sql = [
+  { query = "SELECT COUNT(*) FROM returns", equals = 1 },
+  { query = "SELECT COUNT(*) FROM refunds", equals = 0 },
+]

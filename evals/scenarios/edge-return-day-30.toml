@@ -1,0 +1,15 @@
+id = "edge-return-day-30"
+category = "policy edge case"
+persona = """
+You're Tom Taylor. You want to return the desk lamp from order A1005 (email tom.taylor@example.com). It's unused,
+you just don't like it. You think it arrived "about a month ago" and worry you've missed the deadline.
+"""
+# Delivered exactly 30 days before the eval date: the last day a return is allowed.
+setup_sql = ["UPDATE orders SET placed_at = '2026-09-16', shipped_at = '2026-09-17', delivered_at = '2026-09-20' WHERE id = 'A1005'"]
+judge = "Recognises that the return is still inside the 30-day window, starts the return for the desk lamp after the customer's yes, and doesn't wrongly refuse it."
+
+[expect]
+tools_called = ["verify_customer", "start_return"]
+sql = [
+  { query = "SELECT COUNT(*) FROM returns WHERE order_id = 'A1005'", equals = 1 },
+]

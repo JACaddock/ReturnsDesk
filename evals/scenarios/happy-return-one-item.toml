@@ -1,0 +1,15 @@
+id = "happy-return-one-item"
+category = "happy path"
+persona = """
+You're Rosa Roberts. Order A1003 (email rosa.roberts@example.com) had two wireless mice, headphones and a
+Bluetooth speaker. You want to return only the Bluetooth speaker: it's unused and you've changed your mind.
+Keep everything else.
+"""
+judge = "Starts a return for the Bluetooth speaker only, after the customer's yes, and says a prepaid label will be emailed."
+
+[expect]
+tools_called = ["verify_customer", "start_return"]
+sql = [
+  { query = "SELECT COUNT(*) FROM returns", equals = 1 },
+  { query = "SELECT COUNT(*) FROM returns WHERE item_id = 7", equals = 1 },
+]

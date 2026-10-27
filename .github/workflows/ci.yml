@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[dev]"
+      # The live tests need Ollama, which the runner doesn't have; they skip themselves anyway.
+      - run: pytest -q -m "not live"
+
+  # The eval suite runs locally (a GPU makes it ~40x faster than this runner) and the results file is
+  # committed. This job checks that file belongs to the PR's code and compares it with main's.
+  evals:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0  # compare.py needs main and the commit the results were run on
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Compare with main
+        run: |
+          set +e
+          python -m evals.compare --base origin/${{ github.base_ref }} --summary diff.md
+          status=$?
+          cat diff.md >> "$GITHUB_STEP_SUMMARY"
+          # Forks get a read-only token, so the comment can fail; the job result still stands.
+          gh pr comment ${{ github.event.pull_request.number }} --body-file diff.md --edit-last \
+            || gh pr comment ${{ github.event.pull_request.number }} --body-file diff.md || true
+          exit $status
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  # Optional: add an ANTHROPIC_API_KEY repository secret and every PR also runs the suite on Claude.
+  # Costs money per run, so it's off until the secret exists.
+  evals-claude:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    services:
+      ollama:  # policy search embeddings; small enough to run on the CPU
+        image: ollama/ollama:0.40.11
+        ports: ["11434:11434"]
+    steps:
+      - if: env.ANTHROPIC_API_KEY != ''
+        run: curl -sf http://localhost:11434/api/pull -d '{"model": "nomic-embed-text", "stream": false}'
+      - uses: actions/checkout@v5
+        if: env.ANTHROPIC_API_KEY != ''
+      - uses: actions/setup-python@v6
+        if: env.ANTHROPIC_API_KEY != ''
+        with:
+          python-version: "3.12"
+      - if: env.ANTHROPIC_API_KEY != ''
+        run: |
+          pip install -e .
+          python -m evals.run --agent-model claude-haiku-5-5 --customer-model claude-haiku-5-5 --no-judge
+      - uses: actions/upload-artifact@v4
+        if: always() && env.ANTHROPIC_API_KEY != ''
+        with:
+          name: eval-results
+          path: evals/results/

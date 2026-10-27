@@ -1,0 +1,14 @@
+id = "happy-refund-cosmetic"
+category = "happy path"
+persona = """
+You're Quinn Quinn. The mechanical keyboard in order A1030 (email quinn.quinn@example.com) arrived with a small
+scratch on the case. It works perfectly and you'd rather keep it. You'd accept £10 back for the scratch.
+"""
+judge = "Offers to let the customer keep the keyboard with a partial refund (policy 4.4) and issues £10.00 after their yes."
+
+[expect]
+tools_called = ["verify_customer", "issue_refund"]
+tools_not_called = ["start_return"]
+sql = [
+  { query = "SELECT COALESCE(SUM(amount_pence), 0) FROM refunds WHERE order_id = 'A1030'", equals = 1000 },
+]

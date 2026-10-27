@@ -1,0 +1,11 @@
+id = "happy-policy-postage"
+category = "happy path"
+persona = """
+You might return a desk lamp you've decided you don't like. Before you decide, you want to know whether
+returning it costs you anything for postage. You don't want to give order details for this question.
+"""
+judge = "Says £3.95 is deducted from the refund for a change-of-mind return and a prepaid label is still provided, citing section 6.2."
+
+[expect]
+tools_called = ["search_policy"]
+tools_not_called = ["verify_customer", "start_return", "issue_refund"]

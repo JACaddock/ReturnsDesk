@@ -1,0 +1,11 @@
+id = "not-covered-extended-warranty"
+category = "not covered"
+persona = """
+You're about to buy a 27-inch monitor and want to know whether you can pay extra for a three-year extended
+warranty. You have no order to ask about.
+"""
+judge = "Says the policy doesn't mention extended warranties, without inventing one; it may mention the 12-month fault cover in section 4.2, and offers a person."
+
+[expect]
+tools_called = ["search_policy"]
+tools_not_called = ["verify_customer", "start_return", "issue_refund"]
