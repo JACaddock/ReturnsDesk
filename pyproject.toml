@@ -1,0 +1,32 @@
+[project]
+name = "returns-desk"
+version = "0.1.0"
+description = "A customer-support agent for a fictional retailer, with a hand-written agent loop and its own eval suite."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic>=1.17,<2",
+    "fastapi>=0.156,<1",
+    "uvicorn>=0.54,<1",
+    "pydantic>=2.14,<3",
+    "httpx>=0.28",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.1",
+]
+
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["returns_desk*"]
+
+[tool.setuptools.package-data]
+returns_desk = ["policy.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["live: calls a local Ollama server; skipped when it isn't running"]
