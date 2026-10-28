@@ -11,16 +11,16 @@ afterwards, rule checks on the transcript and an LLM judge.
 
 | Agent model | Scenarios | Success rate | pass^3 | Guardrail violations | Median turns | Median tokens | Median cost |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| qwen3:4b (local) | 30 | 53% (16/30) | not run yet | 1 (a checker bug, since fixed) | 2 | 7,904 | $0 |
+| qwen3:4b (local) | 30 | 56% (50/90 runs) | 33% (10/30) | 0 | 2 | 7,318 | $0 |
 
-From `evals/results/uncommitted-20261027-051221.json`: one run per scenario, qwen3:4b also playing the
-customer and the judge, before the audit fixes below. Judge agreement with hand labels isn't measured yet
-(`python -m evals.label`).
-<!-- TODO: replace with a `--runs 3` results file on a commit, and add a Claude row. -->
+From `evals/results/676d31d.json`: three runs per scenario, qwen3:4b also playing the customer and the judge,
+5.5 hours on a GTX 1660 Super. Judge agreement with hand labels isn't measured yet (`python -m evals.label`).
+<!-- TODO: add a Claude row. -->
 
-By category: happy path 4/8, policy edge cases 4/6, guardrails 2/6, prompt injection 2/4, handoff 2/3, not
-covered 2/3. Most guardrail scenarios that failed did so on the judge or a missing tool call, not by breaking a
-rule: no run refunded over £75, wrote without a yes, or showed an unverified customer's order.
+By category (runs passed, then scenarios passing all three): happy path 16/24 and 3/8, policy edge cases 12/18
+and 3/6, guardrails 7/18 and 1/6, prompt injection 8/12 and 2/4, handoff 5/9 and 1/3, not covered 2/9 and 0/3.
+27 of the 40 failed runs failed on the judge alone; every tool and database check passed. No run refunded over
+£75, wrote without a yes, or showed an unverified customer's order.
 
 ## Architecture
 
@@ -73,10 +73,15 @@ rate; see [How CI checks the evals](#how-ci-checks-the-evals).
 
 All from the latest run, all model judgement on qwen3:4b; none got past a tool rule.
 
+- **The judge is the weakest part.** In 18 of 90 runs qwen3:4b as judge wrote prose with no score, which
+  counts as a fail. A stronger judge model, or a structured-output call, would fix most of those.
+- **Escalates instead of checking the policy.** On the not-covered questions (gift cards, France, extended
+  warranties) it usually hands off without calling `search_policy`, so it never says the policy doesn't
+  cover it.
 - **Tool calls written as text.** The model writes `search_policy(...)` or JSON into its reply instead of
   calling the tool, so nothing happens.
-- **Refunds under the limit never reach `issue_refund`.** Two happy-path refund scenarios stall after the yes.
-  Seen since milestone 2; tool description changes haven't fixed it on this model.
+- **Partial refunds stall after the yes.** The full refund under the limit now passes 3/3, but the £10
+  cosmetic-damage refund reached `issue_refund` in only 1 of 3 runs.
 - **Date arithmetic.** On the day-30 boundary it worked out the deadline itself, got it wrong, and escalated a
   valid return instead of letting `start_return` decide.
 - **Right by luck.** "I don't sell gift cards" without searching the policy.

@@ -190,5 +190,7 @@ What broke, what I tried, what fixed it. Written as I go, not reconstructed late
   web server. In dev, Vite proxies `/chat` to :8000.
 - Compose runs Ollama for the embeddings and pulls `nomic-embed-text` on first start; the app waits on a
   healthcheck (`ollama show`) until the model is there, so the first policy search doesn't fail.
-- The README results table is still the one-run, pre-audit qwen3:4b file. pass^3 and judge agreement need a
-  `--runs 3` run on a commit and the 15 hand labels.
+- First `--runs 3` run on a commit (`evals/results/676d31d.json`), qwen3:4b as agent, customer and judge,
+  5.5 hours: 50/90 runs passed, pass^3 10/30, 0 violations. 27 of the 40 failures were the judge alone, and
+  18 runs had a judge reply with no score at all: the judge is now the least reliable part of the suite.
+  happy-refund-under-limit, failing since milestone 4, passed all three runs.
